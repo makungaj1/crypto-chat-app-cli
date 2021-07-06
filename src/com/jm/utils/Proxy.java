@@ -13,6 +13,7 @@ public abstract class Proxy {
     private final String ip;
     private final int port;
     private PublicKey otherPublicKey;
+    private PrivateKey privateKey;
     private SecretKeySpec secretKey;
     private IvParameterSpec ivParameterSpec;
     private final ObjectOutputStream objectOutputStream;
@@ -23,11 +24,12 @@ public abstract class Proxy {
         this.ip = socket.getInetAddress().getHostAddress();
         this.port = socket.getPort();
         this.otherPublicKey = otherPublicKey;
+        this.privateKey = privateKey;
         this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         this.objectInputStream = new ObjectInputStream(socket.getInputStream());
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-        this.computeSecret(privateKey);
+        if (otherPublicKey != null ) this.computeSecret(this.privateKey);
         this.computeIvParameterSpec(random);
     }
 
@@ -54,8 +56,9 @@ public abstract class Proxy {
         return otherPublicKey;
     }
 
-    public void setOtherPublicKey(PublicKey otherPublicKey) {
+    public void setOtherPublicKey(PublicKey otherPublicKey) throws NoSuchAlgorithmException, InvalidKeyException {
         this.otherPublicKey = otherPublicKey;
+        this.computeSecret(this.privateKey);
     }
 
     public String getIp() {

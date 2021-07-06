@@ -15,4 +15,8 @@ public class Client extends Proxy {
         super(socket, privateKey, null, random);
     }
 
+    public void updatePublicKey() throws IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
+        this.setOtherPublicKey(this.inputObject().getPublicKey());
+    }
+
 }

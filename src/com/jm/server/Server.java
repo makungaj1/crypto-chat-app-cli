@@ -3,9 +3,14 @@ package com.jm.server;
 import com.jm.utils.Constant;
 import com.jm.utils.Util;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.util.TreeMap;
@@ -44,7 +49,7 @@ public class Server {
                 new Thread(new HandleClient(clientSocket)).start();
             }
 
-        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | ClassNotFoundException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
         }
     }
