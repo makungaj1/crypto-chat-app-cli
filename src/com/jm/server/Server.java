@@ -34,7 +34,8 @@ public class Server {
             // Log on the console
             log.info("Server started, listening on: " + Constant.SERVER_IP + ":" + serverSocket.getLocalPort()
                     + "\nServer Private Key: " + Util.byteToHex(keyPair.getPrivate().getEncoded())
-                    + "\nServer Public Key: " + Util.byteToHex(keyPair.getPublic().getEncoded()));
+                    + "\nServer Public Key: " + Util.byteToHex(keyPair.getPublic().getEncoded())
+                    + "\nWaiting for clients requests");
 
             // Listen to client
             Socket clientSocket;
