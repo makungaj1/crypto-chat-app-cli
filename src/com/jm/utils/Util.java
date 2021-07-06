@@ -7,10 +7,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public class Util {
     public static KeyPair generateKeyPair(String algo, int keySize) throws NoSuchAlgorithmException {
@@ -30,7 +27,7 @@ public class Util {
         return random;
     }
 
-    public static String getOtherClientIp() throws SocketException {
+    public static Map<String, String> getOtherClientIp() throws SocketException {
         List<String> list = new ArrayList<>();
 
         Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
@@ -45,6 +42,17 @@ public class Util {
             }
         }
 
-        return list.contains(Constant.CLIENT_A_IP) ? Constant.CLIENT_B_IP : Constant.CLIENT_A_IP;
+        Map<String, String> info = new HashMap<>();
+
+        if (list.contains(Constant.CLIENT_A_IP)) {
+            info.put("IP", Constant.CLIENT_B_IP);
+            info.put("NAME", "Client B");
+        }
+        else {
+            info.put("IP", Constant.CLIENT_A_IP);
+            info.put("NAME", "Client A");
+        }
+
+        return info;
     }
 }
