@@ -73,6 +73,9 @@ public abstract class Proxy {
     }
 
     private void computeSecret(PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException {
+
+        if (this.otherPublicKey == null) throw new InvalidKeyException("Other public key can't be null");
+
         KeyAgreement keyAgreement = KeyAgreement.getInstance("DH");
         keyAgreement.init(privateKey);
         keyAgreement.doPhase(this.otherPublicKey, true);

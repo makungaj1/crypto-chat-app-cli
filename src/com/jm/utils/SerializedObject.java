@@ -1,6 +1,7 @@
 package com.jm.utils;
 
 import java.io.Serializable;
+import java.security.PublicKey;
 
 public class SerializedObject implements Serializable {
     private byte[] fromIP;
@@ -9,6 +10,7 @@ public class SerializedObject implements Serializable {
     private byte[] subject;
     private byte[] message;
     private byte[] ivRandom;
+    private PublicKey publicKey;
 
     public SerializedObject() {}
 
@@ -58,6 +60,14 @@ public class SerializedObject implements Serializable {
 
     public void setIvRandom(byte[] ivRandom) {
         this.ivRandom = ivRandom;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
     }
 
 }
