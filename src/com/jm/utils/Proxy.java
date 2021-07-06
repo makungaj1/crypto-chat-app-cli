@@ -19,18 +19,25 @@ public abstract class Proxy {
     private final ObjectOutputStream objectOutputStream;
     private final ObjectInputStream objectInputStream;
     private final Cipher cipher;
+    private byte[] random;
 
     public Proxy(Socket socket, PrivateKey privateKey, PublicKey otherPublicKey, byte[] random) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         this.ip = socket.getInetAddress().getHostAddress();
         this.port = socket.getPort();
         this.otherPublicKey = otherPublicKey;
         this.privateKey = privateKey;
+        this.random = random;
         this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         this.objectInputStream = new ObjectInputStream(socket.getInputStream());
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-        if (otherPublicKey != null ) this.computeSecret(this.privateKey);
-        this.computeIvParameterSpec(random);
+        if (this.otherPublicKey != null ) this.computeSecret();
+        if (this.random != null) this.computeIvParameterSpec();
+    }
+
+    public void setRandom(byte[] random) {
+        this.random = random;
+        this.computeIvParameterSpec();
     }
 
     public byte[] encrypt(byte[] o) throws InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -62,7 +69,7 @@ public abstract class Proxy {
 
     public void setOtherPublicKey(PublicKey otherPublicKey) throws NoSuchAlgorithmException, InvalidKeyException {
         this.otherPublicKey = otherPublicKey;
-        this.computeSecret(this.privateKey);
+        this.computeSecret();
     }
 
     public String getIp() {
@@ -79,7 +86,7 @@ public abstract class Proxy {
         return a;
     }
 
-    private void computeSecret(PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException {
+    private void computeSecret() throws NoSuchAlgorithmException, InvalidKeyException {
 
         if (this.otherPublicKey == null) throw new InvalidKeyException("Other public key can't be null");
 
@@ -90,7 +97,7 @@ public abstract class Proxy {
         this.secretKey = new SecretKeySpec(keyByte, "AES");
     }
 
-    private void computeIvParameterSpec(byte[] random) {
-        this.ivParameterSpec = new IvParameterSpec(random);
+    private void computeIvParameterSpec() {
+        this.ivParameterSpec = new IvParameterSpec(this.random);
     }
 }
