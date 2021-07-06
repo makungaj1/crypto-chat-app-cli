@@ -23,6 +23,7 @@ public class HandleClient implements Runnable {
         // Get Client Public Key
         client.updatePublicKey();
         Server.log.info("Received Client public key: " + Util.byteToHex(client.getOtherPublicKey().getEncoded()));
+        Server.log.info("Shared secret: " + Util.byteToHex(client.getSecretKey().getEncoded()));
 
         // Send to client the server's public key
         serializedObject = new SerializedObject();

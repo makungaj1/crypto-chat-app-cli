@@ -13,7 +13,7 @@ public abstract class Proxy {
     private final String ip;
     private final int port;
     private PublicKey otherPublicKey;
-    private PrivateKey privateKey;
+    private final PrivateKey privateKey;
     private SecretKeySpec secretKey;
     private IvParameterSpec ivParameterSpec;
     private final ObjectOutputStream objectOutputStream;
@@ -41,6 +41,10 @@ public abstract class Proxy {
     public byte[] decrypt(byte[] o) throws InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         this.cipher.init(Cipher.DECRYPT_MODE, this.secretKey, this.ivParameterSpec);
         return this.cipher.doFinal(o);
+    }
+
+    public SecretKeySpec getSecretKey() {
+        return this.secretKey;
     }
 
     public void outPutObject(SerializedObject serializedObject) throws IOException {
