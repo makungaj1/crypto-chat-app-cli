@@ -1,10 +1,13 @@
 package com.jm.server;
 
 import com.jm.utils.Constant;
+import com.jm.utils.Util;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -12,16 +15,21 @@ public class Server {
 
     protected static final Logger log = Logger.getAnonymousLogger();
     protected static final TreeMap<String, Client> connectedClient = new TreeMap<>();
+    protected static KeyPair keyPair = null;
 
     public static void main(String[] args) {
         try {
+
+            keyPair = Util.generateKeyPair(Constant.KEY_ALGO, Constant.KEY_SIZE);
 
             // Create server
             // Listens on Port: 8000
             ServerSocket serverSocket = new ServerSocket(Constant.SERVER_PORT);
 
             // Log on the console
-            log.info("Server started, listening on: " + Constant.SERVER_IP + ":" + serverSocket.getLocalPort());
+            log.info("Server started, listening on: " + Constant.SERVER_IP + ":" + serverSocket.getLocalPort()
+                    + "\nServer Private Key: " + Util.byteToHex(keyPair.getPrivate().getEncoded())
+                    + "\nServer Public Key: " + Util.byteToHex(keyPair.getPublic().getEncoded()));
 
             // Listen to client
             Socket clientSocket;
@@ -36,7 +44,7 @@ public class Server {
                 new Thread(new HandleClient(clientSocket)).start();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
