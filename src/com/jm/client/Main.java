@@ -14,10 +14,13 @@ import java.util.logging.Logger;
 
 public class Main {
     private static final Logger log = Logger.getAnonymousLogger();
-    private static SerializedObject serializedObject = new SerializedObject();
+    private static final SerializedObject serializedObject = new SerializedObject();
 
     public static void main(String[] args) {
         try {
+
+            // Get other Non-Server IP
+            String MY_FRIEND_IP = Util.getOtherClientIp();
 
             // Generate Key Pair
             KeyPair keyPair = Util.generateKeyPair(Constant.KEY_ALGO, Constant.KEY_SIZE);
@@ -39,7 +42,8 @@ public class Main {
             server.updatePublicKeyAndRandom();
 
             log.info("Server's Public key: " + Util.byteToHex(server.getOtherPublicKey().getEncoded())
-                    + "\nShared secret: " + Util.byteToHex(server.getSecretKey().getEncoded()));
+                    + "\nShared secret: " + Util.byteToHex(server.getSecretKey().getEncoded())
+                    + "\nMy friend's IP: " + MY_FRIEND_IP);
 
         } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidKeyException | ClassNotFoundException e) {
             e.printStackTrace();
