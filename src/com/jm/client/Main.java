@@ -101,28 +101,33 @@ public class Main {
                 // If initiateChat && subject is Active
                 // Else if subject is Active and !initiateChat
                 //      respond with "I am available to chat!" message with subject insta-chat
-                if (!initiateChat && subject.equalsIgnoreCase(Constant.ACTIVE)) {
-                    log.info("Responding to an initial request from " + originIP);
+                if (subject.equalsIgnoreCase(Constant.ACTIVE)) {
+                    if (!initiateChat) {
+                        log.info("Responding to an initial request from " + originIP);
 
-                    fromIPB = server.encrypt(myIP.getBytes());
-                    toIPB = server.encrypt(myFriend.getIp().getBytes());
-                    originIPB = server.encrypt(myIP.getBytes());
-                    subjectB = server.encrypt(Constant.INSTA_CHAT.getBytes());
+                        fromIPB = server.encrypt(myIP.getBytes());
+                        toIPB = server.encrypt(myFriend.getIp().getBytes());
+                        originIPB = server.encrypt(myIP.getBytes());
+                        subjectB = server.encrypt(Constant.INSTA_CHAT.getBytes());
 
-                    log.info("Encrypted data\nFrom: " + Util.byteToHex(fromIPB) + "\nTo: " + Util.byteToHex(toIPB)
-                            + "\nOrigin: " + Util.byteToHex(originIPB) + "\nSubject: " + Util.byteToHex(subjectB));
+                        log.info("Encrypted data\nFrom: " + Util.byteToHex(fromIPB) + "\nTo: " + Util.byteToHex(toIPB)
+                                + "\nOrigin: " + Util.byteToHex(originIPB) + "\nSubject: " + Util.byteToHex(subjectB));
 
-                    serializedObject.setFromIP(fromIPB);
-                    serializedObject.setOriginIP(originIPB);
-                    serializedObject.setToIP(toIPB);
-                    serializedObject.setSubject(subjectB);
+                        serializedObject.setFromIP(fromIPB);
+                        serializedObject.setOriginIP(originIPB);
+                        serializedObject.setToIP(toIPB);
+                        serializedObject.setSubject(subjectB);
 
-                    // encrypt the message with the secret key shared only with the other end
-                    // End-to-End Encryption
-                    // The server does not have the key to decrypt this message
-                    serializedObject.setMessage(myFriend.encrypt("I am available to chat!".getBytes()));
+                        // encrypt the message with the secret key shared only with the other end
+                        // End-to-End Encryption
+                        // The server does not have the key to decrypt this message
+                        serializedObject.setMessage(myFriend.encrypt("I am available to chat!".getBytes()));
 
-                    log.info("Sent the first insta-chat request as a reply to initial request from " + originIP);
+                        log.info("Sent the first insta-chat request as a reply to initial request from " + originIP);
+                    } else {
+                        log.info("My Friend is Active, waiting for them to kick off the chat");
+                        initiateChat = false;
+                    }
                 }
                 else if (subject.equalsIgnoreCase(Constant.LOGOUT) || subject.equalsIgnoreCase(Constant.INACTIVE)) {
                     isActive = false;
@@ -132,8 +137,7 @@ public class Main {
                     serializedObject.setSubject(server.encrypt(Constant.LOGOUT.getBytes()));
                     log.info("Subject is either Log out or Inactive\nSent log out signal to server");
                 }
-
-                else if (subject.equalsIgnoreCase(Constant.INSTA_CHAT) || (initiateChat && subject.equalsIgnoreCase(Constant.ACTIVE))) {
+                else if (subject.equalsIgnoreCase(Constant.INSTA_CHAT)) {
                     assert myFriend != null;
                     String msg = new String(myFriend.decrypt(serializedObject.getMessage()));
 
@@ -150,7 +154,8 @@ public class Main {
                     server.outPutObject(serializedObject);
                     log.info("reply sent");
 
-                } else {
+                }
+                else {
                     log.info("Unsupported Subject: " + subject);
                     break;
                 }
