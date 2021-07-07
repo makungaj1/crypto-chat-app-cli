@@ -156,6 +156,7 @@ public class HandleClient implements Runnable {
             Server.log.info("terminating thread " + Thread.currentThread().getName()
                     + "\nTerminating the current socket " + this.socket.getInetAddress().getHostAddress());
             this.socket.close();
+            Server.connectedClient.remove(client.getIp());
             Thread.currentThread().interrupt();
 
         } catch (IOException | ClassNotFoundException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException e) {
