@@ -89,6 +89,7 @@ public class HandleClient implements Runnable {
                             serializedObject.setFromIP(targetClient.encrypt(Constant.SERVER_IP.getBytes()));
                             serializedObject.setOriginIP(targetClient.encrypt(fromIP.getBytes()));
                             serializedObject.setToIP(targetClient.encrypt(toIP.getBytes()));
+                            serializedObject.setSubject(targetClient.encrypt(subject.getBytes()));
 
                             // TODO: check that the message body is not null
 
