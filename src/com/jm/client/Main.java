@@ -120,7 +120,7 @@ public class Main {
                     log.info("Subject is either Log out or Inactive\nSent log out signal to server");
                 }
 
-                else if (subject.equalsIgnoreCase(Constant.INSTA_CHAT)) {
+                else if (subject.equalsIgnoreCase(Constant.INSTA_CHAT) || (initiateChat && subject.equalsIgnoreCase(Constant.ACTIVE))) {
                     assert myFriend != null;
                     String msg = new String(myFriend.decrypt(serializedObject.getMessage()));
 
