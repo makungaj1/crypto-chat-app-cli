@@ -71,7 +71,8 @@ public class HandleClient implements Runnable {
                 String toIP = new String(client.decrypt(serializedObject.getToIP()));
 
                 // Log
-                Server.log.info("received a(n) " + subject + " request from " + fromIP + " going to " + toIP);
+                Server.log.info("received a(n) " + subject + " request from " + fromIP + " going to " + toIP
+                        + "\nmsg: " + Util.byteToHex(serializedObject.getMessage()));
 
                 if (subject.equalsIgnoreCase(Constant.INITIAL) || subject.equalsIgnoreCase(Constant.INSTA_CHAT)) {
 

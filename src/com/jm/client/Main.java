@@ -80,6 +80,11 @@ public class Main {
                 String originIP = new String(server.decrypt(serializedObject.getOriginIP()));
                 String subject = new String(server.decrypt(serializedObject.getSubject()));
 
+                byte[] fromIPB;
+                byte[] toIPB;
+                byte[] originIPB;
+                byte[] subjectB;
+
                 log.info("reading request from server\nFrom IP: " + fromIP
                         + "\nTo IP: " + toIP + "\nOrigin IP: " + originIP + "\nSubject: " + subject);
 
@@ -99,10 +104,18 @@ public class Main {
                 if (!initiateChat && subject.equalsIgnoreCase(Constant.ACTIVE)) {
                     log.info("Responding to an initial request from " + originIP);
 
-                    serializedObject.setFromIP(server.encrypt(myIP.getBytes()));
-                    serializedObject.setOriginIP(server.encrypt(myIP.getBytes()));
-                    serializedObject.setToIP(server.encrypt(myFriend.getIp().getBytes()));
-                    serializedObject.setSubject(server.encrypt(Constant.INSTA_CHAT.getBytes()));
+                    fromIPB = server.encrypt(myIP.getBytes());
+                    toIPB = server.encrypt(myFriend.getIp().getBytes());
+                    originIPB = server.encrypt(myIP.getBytes());
+                    subjectB = server.encrypt(Constant.INSTA_CHAT.getBytes());
+
+                    log.info("Encrypted data\nFrom: " + Util.byteToHex(fromIPB) + "\nTo: " + Util.byteToHex(toIPB)
+                            + "\nOrigin: " + Util.byteToHex(originIPB) + "\nSubject: " + Util.byteToHex(subjectB));
+
+                    serializedObject.setFromIP(fromIPB);
+                    serializedObject.setOriginIP(originIPB);
+                    serializedObject.setToIP(toIPB);
+                    serializedObject.setSubject(subjectB);
 
                     // encrypt the message with the secret key shared only with the other end
                     // End-to-End Encryption
