@@ -85,7 +85,7 @@ public class Main {
 
                 if (myFriend == null && subject.equalsIgnoreCase(Constant.ACTIVE)) {
                     log.info("Creating my friend object");
-                    myFriend = new Client(socket, keyPair.getPrivate(), serializedObject.getIvRandom());
+                    myFriend = new Client(null, keyPair.getPrivate(), serializedObject.getIvRandom());
                     myFriend.setOtherPublicKey(serializedObject.getPublicKey());
                     log.info("My Friend Public Key: " + Util.byteToHex(myFriend.getOtherPublicKey().getEncoded())
                             + "\nSecret key with my friend: " + Util.byteToHex(myFriend.getSecretKey().getEncoded()));

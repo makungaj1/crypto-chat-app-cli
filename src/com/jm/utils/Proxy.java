@@ -22,13 +22,22 @@ public abstract class Proxy {
     private byte[] random;
 
     public Proxy(Socket socket, PrivateKey privateKey, PublicKey otherPublicKey, byte[] random) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        this.ip = socket.getInetAddress().getHostAddress();
-        this.port = socket.getPort();
+
+        if (socket != null) {
+            this.ip = socket.getInetAddress().getHostAddress();
+            this.port = socket.getPort();
+            this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(socket.getInputStream());
+        } else {
+            this.ip = null;
+            this.port = 0;
+            this.objectOutputStream = null;
+            this.objectInputStream = null;
+        }
+
         this.otherPublicKey = otherPublicKey;
         this.privateKey = privateKey;
         this.random = random;
-        this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        this.objectInputStream = new ObjectInputStream(socket.getInputStream());
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
         if (this.otherPublicKey != null ) this.computeSecret();
