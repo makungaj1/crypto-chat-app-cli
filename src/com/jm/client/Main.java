@@ -111,7 +111,11 @@ public class Main {
                 }
                 else if (subject.equalsIgnoreCase(Constant.LOGOUT) || subject.equalsIgnoreCase(Constant.INACTIVE)) {
                     isActive = false;
-                    log.info("Subject is either Log out or Inactive");
+                    serializedObject.setFromIP(server.encrypt(myIP.getBytes()));
+                    serializedObject.setOriginIP(server.encrypt(myIP.getBytes()));
+                    serializedObject.setToIP(server.encrypt(server.getIp().getBytes()));
+                    serializedObject.setSubject(server.encrypt(Constant.LOGOUT.getBytes()));
+                    log.info("Subject is either Log out or Inactive\nSent log out signal to server");
                 }
 
                 else if (subject.equalsIgnoreCase(Constant.INSTA_CHAT)) {
