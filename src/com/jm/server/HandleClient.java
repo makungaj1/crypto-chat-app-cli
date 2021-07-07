@@ -69,10 +69,11 @@ public class HandleClient implements Runnable {
                 String subject = new String(client.decrypt(serializedObject.getSubject()));
                 String fromIP = new String(client.decrypt(serializedObject.getFromIP()));
                 String toIP = new String(client.decrypt(serializedObject.getToIP()));
+                String msg = serializedObject.getMessage() == null ? "null" :Util.byteToHex(serializedObject.getMessage());
 
                 // Log
                 Server.log.info("received a(n) " + subject + " request from " + fromIP + " going to " + toIP
-                        + "\nmsg: " + Util.byteToHex(serializedObject.getMessage()));
+                        + "\nmsg: " + msg);
 
                 if (subject.equalsIgnoreCase(Constant.INITIAL) || subject.equalsIgnoreCase(Constant.INSTA_CHAT)) {
 
