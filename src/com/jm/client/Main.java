@@ -122,6 +122,7 @@ public class Main {
                         // End-to-End Encryption
                         // The server does not have the key to decrypt this message
                         serializedObject.setMessage(myFriend.encrypt("I am available to chat!".getBytes()));
+                        server.outPutObject(serializedObject);
 
                         log.info("Sent the first insta-chat request as a reply to initial request from " + originIP);
                     } else {
