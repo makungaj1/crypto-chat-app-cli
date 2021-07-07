@@ -154,17 +154,27 @@ public class HandleClient implements Runnable {
                 }
                 // Unsupported subject
             }
-
-            // Close thread/Socket
-            Server.log.info("terminating thread " + Thread.currentThread().getName()
-                    + "\nTerminating the current socket " + this.socket.getInetAddress().getHostAddress());
-            this.socket.close();
-            Server.connectedClient.remove(client.getIp());
-            Thread.currentThread().interrupt();
+            terminate();
 
         } catch (IOException | ClassNotFoundException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException e) {
             e.printStackTrace();
+            System.out.println(e.getClass());
+        } finally {
+            terminate();
         }
 
+    }
+
+    private void terminate()  {
+        // Close thread/Socket
+        Server.log.info("terminating thread " + Thread.currentThread().getName()
+                + "\nTerminating the current socket " + this.socket.getInetAddress().getHostAddress());
+        try {
+            this.socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Server.connectedClient.remove(client.getIp());
+        Thread.currentThread().interrupt();
     }
 }
