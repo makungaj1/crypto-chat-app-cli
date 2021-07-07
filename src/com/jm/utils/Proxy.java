@@ -10,8 +10,8 @@ import java.net.Socket;
 import java.security.*;
 
 public abstract class Proxy {
-    private final String ip;
-    private final int port;
+    private String ip;
+    private int port;
     private PublicKey otherPublicKey;
     private final PrivateKey privateKey;
     private SecretKeySpec secretKey;
@@ -87,6 +87,14 @@ public abstract class Proxy {
 
     public int getPort() {
         return port;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     private byte[] shorten(byte[] o) {

@@ -87,6 +87,8 @@ public class Main {
                     log.info("Creating my friend object");
                     myFriend = new Client(null, keyPair.getPrivate(), serializedObject.getIvRandom());
                     myFriend.setOtherPublicKey(serializedObject.getPublicKey());
+                    myFriend.setIp(MY_FRIEND.get("IP"));
+                    myFriend.setPort(1111);
                     log.info("My Friend Public Key: " + Util.byteToHex(myFriend.getOtherPublicKey().getEncoded())
                             + "\nSecret key with my friend: " + Util.byteToHex(myFriend.getSecretKey().getEncoded()));
                 }
