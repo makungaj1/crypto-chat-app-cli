@@ -1,5 +1,6 @@
 package com.jm.client;
 
+import com.jm.server.Client;
 import com.jm.utils.Constant;
 import com.jm.utils.SerializedObject;
 import com.jm.utils.Util;
@@ -14,17 +15,21 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Main {
     private static final Logger log = Logger.getAnonymousLogger();
     private static SerializedObject serializedObject = new SerializedObject();
+    private static Client myFriend = null;
+    private static final Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
         try {
 
             // Get other Non-Server IP
             Map<String, String> MY_FRIEND = Util.getOtherClientIp();
+            String myIP = MY_FRIEND.get("IP").equalsIgnoreCase(Constant.CLIENT_A_IP) ? Constant.CLIENT_B_IP : Constant.CLIENT_A_IP;
 
             // Generate Key Pair
             KeyPair keyPair = Util.generateKeyPair(Constant.KEY_ALGO, Constant.KEY_SIZE);
@@ -69,15 +74,67 @@ public class Main {
                     log.info("Initial request sent");
                 }
 
+                serializedObject = server.inputObject();
+                String fromIP = new String(server.decrypt(serializedObject.getFromIP()));
+                String toIP = new String(server.decrypt(serializedObject.getToIP()));
+                String originIP = new String(server.decrypt(serializedObject.getOriginIP()));
+                String subject = new String(server.decrypt(serializedObject.getSubject()));
+
+                log.info("reading request from server\nFrom IP: " + fromIP
+                        + "\nTo IP: " + toIP + "\nOrigin IP: " + originIP + "\nSubject: " + subject);
+
+                if (myFriend == null && subject.equalsIgnoreCase(Constant.ACTIVE)) {
+                    log.info("Creating my friend object");
+                    myFriend = new Client(socket, keyPair.getPrivate(), serializedObject.getIvRandom());
+                    myFriend.setOtherPublicKey(serializedObject.getPublicKey());
+                    log.info("My Friend Public Key: " + Util.byteToHex(myFriend.getOtherPublicKey().getEncoded())
+                            + "\nSecret key with my friend: " + Util.byteToHex(myFriend.getSecretKey().getEncoded()));
+                }
+
                 // If initiateChat && subject is Active
-                //      create other user object
                 // Else if subject is Active and !initiateChat
-                //      create other user object
-                //      respond with "I am available to chat!" message
-                // if subject is insta-chat
-                //      Read message
-                //      Type reply answer and send
-                // Else: set isActive to false
+                //      respond with "I am available to chat!" message with subject insta-chat
+                if (!initiateChat && subject.equalsIgnoreCase(Constant.ACTIVE)) {
+                    log.info("Responding to an initial request from " + originIP);
+
+                    serializedObject.setFromIP(server.encrypt(myIP.getBytes()));
+                    serializedObject.setOriginIP(server.encrypt(myIP.getBytes()));
+                    serializedObject.setToIP(server.encrypt(myFriend.getIp().getBytes()));
+                    serializedObject.setSubject(server.encrypt(Constant.INSTA_CHAT.getBytes()));
+
+                    // encrypt the message with the secret key shared only with the other end
+                    // End-to-End Encryption
+                    // The server does not have the key to decrypt this message
+                    serializedObject.setMessage(myFriend.encrypt("I am available to chat!".getBytes()));
+
+                    log.info("Sent the first insta-chat request as a reply to initial request from " + originIP);
+                }
+                else if (subject.equalsIgnoreCase(Constant.LOGOUT) || subject.equalsIgnoreCase(Constant.INACTIVE)) {
+                    isActive = false;
+                    log.info("Subject is either Log out or Inactive");
+                }
+
+                else if (subject.equalsIgnoreCase(Constant.INSTA_CHAT)) {
+                    assert myFriend != null;
+                    String msg = new String(myFriend.decrypt(serializedObject.getMessage()));
+
+                    log.info("Reading Message\nEncrypted: " + Util.byteToHex(serializedObject.getMessage())
+                            + "\nDecrypted: " + msg);
+
+                    System.out.print("you: ");
+                    msg = input.nextLine();
+
+                    serializedObject.setMessage(myFriend.encrypt(msg.getBytes())); // End to End Encryption
+                    serializedObject.setFromIP(server.encrypt(myIP.getBytes()));
+                    serializedObject.setOriginIP(server.encrypt(myIP.getBytes()));
+                    serializedObject.setToIP(server.encrypt(myFriend.getIp().getBytes()));
+                    server.outPutObject(serializedObject);
+                    log.info("reply sent");
+
+                } else {
+                    log.info("Unsupported Subject: " + subject);
+                    break;
+                }
 
             }
 
