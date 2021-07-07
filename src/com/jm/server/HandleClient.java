@@ -142,6 +142,7 @@ public class HandleClient implements Runnable {
 
                         client.outPutObject(serializedObject);
                         Server.log.info("Sent inactive subject to " + client.getIp());
+                        break;
                     }
 
                 }
